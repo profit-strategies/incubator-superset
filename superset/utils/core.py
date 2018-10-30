@@ -194,13 +194,17 @@ def parse_human_datetime(s):
         return None
     try:
         dttm = parse(s)
+        logging.info("string is: " + s + ", dttm is: " + dttm)
     except Exception:
         try:
+            logging.info("string is: " + s)
             cal = parsedatetime.Calendar()
             parsed_dttm, parsed_flags = cal.parseDT(s)
             # when time is not extracted, we 'reset to midnight'
             if parsed_flags & 2 == 0:
-                parsed_dttm = parsed_dttm.replace(hour=0, minute=0, second=0)
+                logging.info("resetting h, m, s")
+                parsed_dttm = parsed_dttm.replace(hour=23, minute=59, second=59)
+                # parsed_dttm = parsed_dttm.replace(hour=0, minute=0, second=0)
             dttm = dttm_from_timtuple(parsed_dttm.utctimetuple())
         except Exception as e:
             logging.exception(e)
@@ -912,6 +916,7 @@ def get_since_until(form_data):
     """
     separator = ' : '
     today = parse_human_datetime('today')
+    logging.info("today is: " + today.strftime('%Y-%m-%d:%H:%M:%S'))
     common_time_frames = {
         'Last day': (today - relativedelta(days=1), today),
         'Last week': (today - relativedelta(weeks=1), today),
